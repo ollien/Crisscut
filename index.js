@@ -64,6 +64,16 @@ Crisscut.prototype.route = function(req,res,errCallback){
 	}
 }
 
+Crisscut.prototype.addRoute = function(method,route,routeCallback){
+	method = method.toLowerCase();
+	route = route.toLowerCase();
+	if (!this.routes.hasOwnProperty(route)){
+		this.routes[route] = {}
+	}
+	this.routes[route][method] = routeCallback;
+	
+}
+
 function matchArrayIndexes(array,regexp){
 	var matchingIndexes = []
 	array.forEach(function(element,index){
