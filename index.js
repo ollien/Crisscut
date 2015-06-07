@@ -43,7 +43,6 @@ Crisscut.prototype.route = function(req,res,errCallback){
 		}
 	}
 	if (finalRoute){
-		console.log(requestUrl+"->"+finalRoute);
 		var arguments = returnArrayFromArrayIndexes(routeSplit,argumentIndexes);
 		var routeMethods = this.routes[finalRoute];
 		var method = req.method.toLowerCase();
@@ -61,9 +60,6 @@ Crisscut.prototype.route = function(req,res,errCallback){
 		pathError.error = pathError.error.replace("$PATH", requestUrl);	
 		if (errCallback){
 			errCallback(pathError);	
-		}
-		else{
-			console.log(pathError);
 		}
 	}
 }
