@@ -27,7 +27,6 @@ Crisscut.prototype.route = function(req,res,errCallback){
 	var finalRoute = null;
 	for (var i=0; i<Object.keys(this.routes).length; i++){
 		var route = Object.keys(this.routes)[i];
-		
 		var routeSplit = route.split('/');
 		var argumentIndexes = matchArrayIndexes(routeSplit, ARGUMENT_PATTERN);
 		if (routeSplit.length===urlSplit.length){
@@ -45,6 +44,17 @@ Crisscut.prototype.route = function(req,res,errCallback){
 	}
 	if (finalRoute){
 		console.log(requestUrl+"->"+finalRoute);
+		var arguments = returnArrayFromArrayIndexes(routeSplit,argumentIndexes);
+		var routeMethods = this.routes[finalRoute];
+		var method = req.method.toLowerCase();
+		if (routeMethods.hasOwnProperty(method)){
+			routeMethods[method].apply(undefined,[req,res].concat(arguments));
+		}
+		else{
+			if (routeMethods.hasOwnProperty('on')){
+				routeMethods.on.apply(undefined,[req,res].concat(arguments))
+			}
+		}
 	}
 	else{
 		var pathError = PATH_NOT_FOUND_ERROR;
@@ -68,6 +78,14 @@ function matchArrayIndexes(array,regexp){
 	return matchingIndexes;
 }
 
+function returnArrayFromArrayIndexes(array,indexes){
+	var items = [];
+	indexes.forEach(function(index){
+		items.push(array[index]);
+	});
+	return items;
+}
+
 function correctRoutes(routes){
 	Object.keys(routes).forEach(function(route){
 		var original = route;
@@ -82,6 +100,13 @@ function correctRoutes(routes){
 			delete routes[original];
 			routes[route] = value;
 		}
+		Object.keys(routes[route]).forEach(function(item){
+			if (item!=item.toLowerCase()){
+				var value = routes[route][item];
+				delete routes[route][item];
+				routes[route][item.toLowerCase()] = value;
+			}
+		})
 	});
 	return routes;
 }
