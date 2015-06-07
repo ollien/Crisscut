@@ -4,13 +4,17 @@ const PATH_NOT_FOUND_ERROR = {
 	errorCode:404,
 	error:'$PATH is not a known route.'
 }
+const METHOD_NOT_ALLOWED_ERROR = {
+	errorCode:405,
+	error:'$METHOD is not allowed on $PATH'
+}
 
 const ARGUMENT_PATTERN = new RegExp(":[^ \/]*");
 
 module.exports = Crisscut
 
 function Crisscut(routes){
-	if (routes!=undefined){
+	if (routes!==undefined){
 		this.routes = correctRoutes(routes);
 	}
 }
@@ -53,6 +57,14 @@ Crisscut.prototype.route = function(req,res,errCallback){
 			if (routeMethods.hasOwnProperty('on')){
 				routeMethods.on.apply(undefined,[req,res].concat(arguments))
 			}
+			else{
+				var pathError = METHOD_NOT_ALLOWED_ERROR;
+				pathError.error = pathError.error.replace("$PATH",requestUrl);
+				pathError.error = pathError.error.replace("$METHOD",method.toUpperCase());
+				if (errCallback){
+					errCallback(pathError);
+				}
+			}
 		}
 	}
 	else{
@@ -71,7 +83,6 @@ Crisscut.prototype.addRoute = function(method,route,routeCallback){
 		this.routes[route] = {}
 	}
 	this.routes[route][method] = routeCallback;
-	
 }
 
 function matchArrayIndexes(array,regexp){
