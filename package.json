@@ -1,0 +1,6 @@
+{
+	name:"Timpani",
+	version:"0.1",
+	description:"A simple, effortless router for Node.js",
+	license: "MIT"
+}
