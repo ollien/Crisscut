@@ -7,15 +7,15 @@ const PATH_NOT_FOUND_ERROR = {
 
 const ARGUMENT_PATTERN = new RegExp(":[^ \/]*");
 
-module.exports = Timpani
+module.exports = Crisscut
 
-function Timpani(routes){
+function Crisscut(routes){
 	if (routes!=undefined){
 		this.routes = correctRoutes(routes);
 	}
 }
 
-Timpani.prototype.route = function(req,res,errCallback){
+Crisscut.prototype.route = function(req,res,errCallback){
 	var requestUrl = url.parse(req.url).pathname; //Removes any URL arguments from the path
 	if (requestUrl[0]!=='/'){ //Urls should start with a /
 		requestUrl = '/'+requestUrl;
