@@ -33,13 +33,50 @@ Crisscut.prototype.route = function(req,res,errCallback){
 		var route = Object.keys(this.routes)[i];
 		var routeSplit = route.split('/');
 		var argumentIndexes = matchArrayIndexes(routeSplit, ARGUMENT_PATTERN);
-		if (routeSplit.length===urlSplit.length){
+		var regexMatches = null;
+		var regexDelta = 0;
+		if (routeSplit.length===urlSplit.length || arrayHasObjectWithPropertyValue(argumentIndexes,"type","regex")){
 			//Browse for arguments within each url, and replace them with what they actually are in the url.
-			argumentIndexes.forEach(function(j){
-				if (urlSplit[j].length>0){
-					routeSplit[j] = urlSplit[j];	
+			for (var j = 0; j<argumentIndexes.length; j++){
+				var index = argumentIndexes[j];
+				var origIndex = index.index;
+				var offsetIndex = index.index+regexDelta;
+				if (index.type==="string" && offsetIndex<urlSplit.length){
+					if (urlSplit[offsetIndex].length>0){
+						routeSplit[origIndex] = urlSplit[offsetIndex];	
+					}
 				}
-			});
+				else if (index.type==="regex"){
+					//If ! prefixes any regex group, it should only be matched once
+					if (routeSplit[origIndex][1]!=="!"){
+						var regex = routeSplit[origIndex].substring(2,routeSplit[origIndex].length-1);	
+						var oneOnly = false;
+					}
+					else{
+						var regex = routeSplit[origIndex].substring(3,routeSplit[origIndex].length-1);
+						var oneOnly = true;
+					}
+					routeSplit[origIndex] = ""
+					//Search for regex matches in every section of the url
+					for (var l = offsetIndex; (oneOnly ? l<offsetIndex+1 && l<urlSplit.length:l<urlSplit.length); l++){
+						if (	urlSplit[l].match(regex)){
+							routeSplit[origIndex]+=urlSplit[l];
+							if (l!=urlSplit.length-1 && !oneOnly){
+								routeSplit[origIndex]+="/";
+							}
+						}
+						else{
+							if (l!=offsetIndex){
+								regexDelta+=(l-offsetIndex)-1;
+							}
+							break;
+						}
+					}
+				}
+				if (routeSplit[origIndex][routeSplit[origIndex].length-1]==="/"){
+					routeSplit[origIndex] = routeSplit[origIndex].substring(0,routeSplit[origIndex].length-1);
+				}
+			}
 			if (routeSplit.join('/')===urlSplit.join('/')){
 				finalRoute = route;
 				break;
@@ -47,7 +84,7 @@ Crisscut.prototype.route = function(req,res,errCallback){
 		}
 	}
 	if (finalRoute){
-		var arguments = returnArrayFromArrayIndexes(routeSplit,argumentIndexes);
+		var arguments = returnArrayFromArrayIndexesObject(routeSplit,argumentIndexes);
 		var routeMethods = this.routes[finalRoute];
 		var method = req.method.toLowerCase();
 		if (routeMethods.hasOwnProperty(method)){
@@ -88,17 +125,21 @@ Crisscut.prototype.addRoute = function(method,route,routeCallback){
 function matchArrayIndexes(array,regexp){
 	var matchingIndexes = []
 	array.forEach(function(element,index){
-		if (element.match(regexp)){
-			matchingIndexes.push(index);
+		if ((element[1]==="(" || element[2]==="(") && element[element.length-1]===")"){
+			matchingIndexes.push({index:index,type:"regex"})
 		}
+		else if (element.match(regexp)){
+			matchingIndexes.push({index:index,type:"string"});
+		}
+		
 	});
 	return matchingIndexes;
 }
 
-function returnArrayFromArrayIndexes(array,indexes){
+function returnArrayFromArrayIndexesObject(array,indexes){
 	var items = [];
-	indexes.forEach(function(index){
-		items.push(array[index]);
+	indexes.forEach(function(item){
+		items.push(array[item.index]);
 	});
 	return items;
 }
@@ -126,4 +167,22 @@ function correctRoutes(routes){
 		})
 	});
 	return routes;
+}
+
+function arrayHasObjectWithProperty(array,property){
+	for (var i = 0; i<array.length; i++){
+		if (array[i].hasOwnProperty(property)){
+			return true;
+		}
+	}
+	return false;
+}
+
+function arrayHasObjectWithPropertyValue(array,property,value){
+	for (var i = 0; i<array.length; i++){
+		if (array[i].hasOwnProperty(property) && array[i][property]===value){
+			return true;
+		}
+	}
+	return false;
 }
