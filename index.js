@@ -95,7 +95,7 @@ Crisscut.prototype.route = function(req,res,errCallback){
 				routeMethods.on.apply(undefined,[req,res].concat(arguments))
 			}
 			else{
-				var pathError = METHOD_NOT_ALLOWED_ERROR;
+				var pathError = JSON.parse(JSON.stringify(METHOD_NOT_ALLOWED_ERROR));
 				pathError.error = pathError.error.replace("$PATH",requestUrl);
 				pathError.error = pathError.error.replace("$METHOD",method.toUpperCase());
 				if (errCallback){
@@ -105,7 +105,7 @@ Crisscut.prototype.route = function(req,res,errCallback){
 		}
 	}
 	else{
-		var pathError = PATH_NOT_FOUND_ERROR;
+		var pathError = JSON.parse(JSON.stringify(PATH_NOT_FOUND_ERROR));
 		pathError.error = pathError.error.replace("$PATH", requestUrl);	
 		if (errCallback){
 			errCallback(pathError);	
