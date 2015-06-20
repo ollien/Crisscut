@@ -18,7 +18,8 @@ var router = {
 				return __routes;
 			}
 			if (pathSegment.indexOf(":") !== -1) {
-				// pathSegment = ":variable";
+				// __routes[pathSegment][":hero"] = true;
+				pathSegment = ":variable";
 			}
 			__routes[pathSegment] = __routes[pathSegment] || {}; //not sure how well this will work like this, but try it. // there can only be one :variable per route, that is /user/:name and /user/:foobar are treated as the same
 			prev = __routes[pathSegment];
@@ -50,11 +51,11 @@ var router = {
 				return;
 			}
 
-			var hero = Object.keys(next).filter(function(x) { return x.indexOf(':') === 0; }); // only one is counted, the rest are overwritten by this path, by logical necessity; otherwise, there's no other way to disambiguate between "/user/:name" and "/user/:foo"
-			if (hero.length > 0) { // there is a key in this current level that has a ":" in it
+			// var hero = Object.keys(next).filter(function(x) { return x.indexOf(':') === 0; }); // only one is counted, the rest are overwritten by this path, by logical necessity; otherwise, there's no other way to disambiguate between "/user/:name" and "/user/:foo"
+			if (next[":variable"]) { // there is a key in this current level that has a ":" in it
 				matched = true; // type conversions?
 				argList.push(segment);
-				next = next[hero[0]];
+				next = next[":variable"]; // HEEERRROOOOO
 			} else if (next[segment]) {
 				matched = true;
 				next = next[segment];
@@ -93,7 +94,7 @@ function idNameAge(req, res, name, age, params) {
 router
 	.get("/user/settings", id)
 	.get("/user/:name", idName)
-	.get("/user/:foobar", fooName) // overwrites the above // no it doesn't, but it should. hero[0] is the problem.
+	.get("/user/:foobar", fooName) // overwrites the above
 	.get("/user/:name/:age", idNameAge)
 
 function u(i) {
