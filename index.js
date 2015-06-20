@@ -93,7 +93,7 @@ function idNameAge(req, res, name, age, params) {
 router
 	.get("/user/settings", id)
 	.get("/user/:name", idName)
-	.get("/user/:foobar", fooName) // overwrites the above
+	.get("/user/:foobar", fooName) // overwrites the above // no it doesn't, but it should. hero[0] is the problem.
 	.get("/user/:name/:age", idNameAge)
 
 function u(i) {
