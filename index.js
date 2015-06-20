@@ -59,7 +59,8 @@ Crisscut.prototype.route = function(req,res,errCallback){
 					routeSplit[origIndex] = ""
 					//Search for regex matches in every section of the url
 					for (var l = offsetIndex; (oneOnly ? l<offsetIndex+1 && l<urlSplit.length:l<urlSplit.length); l++){
-						if (	urlSplit[l].match(regex)){
+						var match = urlSplit[l].match(regex);
+						if (	match && match[0]===urlSplit[l]){
 							routeSplit[origIndex]+=urlSplit[l];
 							if (l!=urlSplit.length-1 && !oneOnly){
 								routeSplit[origIndex]+="/";
