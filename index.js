@@ -54,7 +54,7 @@ var router = {
 			if (hero.length > 0) { // there is a key in this current level that has a ":" in it
 				matched = true; // type conversions?
 				argList.push(segment);
-				next = next[hero[hero.length - 1]];
+				next = next[hero[0]];
 			} else if (next[segment]) {
 				matched = true;
 				next = next[segment];
@@ -100,6 +100,6 @@ function u(i) {
 	console.log(require("util").inspect(i, {depth: null, colors: true}));
 }
 
-// router.dispatch({method: "GET", url: "/user/settings?min=20&max=40&no_track"}, {"res": true});
+router.dispatch({method: "GET", url: "/user/settings?min=20&max=40&no_track"}, {"res": true});
 router.dispatch({method: "GET", url: "/user/chrisdotcode?min=20&max=40&no_track"}, {"res": true});
-// router.dispatch({method: "GET", url: "/user/chrisdotcode/22?min=20&max=40&no_track"}, {"res": true});
+router.dispatch({method: "GET", url: "/user/chrisdotcode/22?min=20&max=40&no_track"}, {"res": true});
