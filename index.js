@@ -43,11 +43,11 @@ Crisscut.prototype.route = function(req,res,errCallback){
 		var routeMethods = this.routes[finalRoute];
 		var method = req.method.toLowerCase();
 		if (routeMethods.hasOwnProperty(method)){
-			routeMethods[method].apply(undefined,[req,res].concat(urlArguments));
+			routeMethods[method].apply({},[req,res].concat(urlArguments));
 		}
 		else{
 			if (routeMethods.hasOwnProperty('on')){
-				routeMethods.on.apply(undefined,[req,res].concat(urlArguments))
+				routeMethods.on.apply({},[req,res].concat(urlArguments))
 			}
 			else{
 				var pathError = clone(METHOD_NOT_ALLOWED_ERROR);
