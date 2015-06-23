@@ -16,6 +16,7 @@ function Crisscut(routes){
 		console.log(JSON.stringify(this.routeTree))
 	}
 }
+
 Crisscut.prototype.route = function(req,res,errCallback){
 	var parsedUrl = url.parse(req.url)
 	var rawUrl = parsedUrl.pathname
@@ -40,7 +41,18 @@ Crisscut.prototype.route = function(req,res,errCallback){
 		errCallback(pathNotFound(rawUrl))
 	}
 }
-
+Crisscut.prototype.addRoute = function(method,route,func){
+	var result = findRouteInTree(this,route)
+	method = method.toLowerCase();
+	if (result!=null){
+		result.functions[method] = func
+	}
+	else{
+		var obj = {};
+		obj[route][method] = func
+		addRouteToRouteTree(this,obj)
+	}
+}
 function correctRoutes(routes){
 	Object.keys(routes).forEach(function(route){
 		var original = route
