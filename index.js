@@ -102,14 +102,14 @@ function addRouteToRouteTree(router,route,functions,parentNode){
 			index = findObjectWithPropertyValueInArray(parentNode.children, "type", "variable")
 			if (index>-1){
 				routeSplit.shift()
-				addRouteToRouteTree(routeSplit.join("/"), functions, routeSplit.children[index])
+				addRouteToRouteTree(router,routeSplit.join("/"), functions, parentNode.children[index])
 			}
 			else{
 				var leaf = createLeaf(routeSplit[0], type,false)
 				parentNode.children.push(leaf)
 				routeSplit.shift()
 				if (routeSplit.length>0){
-					addRouteToRouteTree(router,router,routeSplit.join("/"), functions, leaf)
+					addRouteToRouteTree(router,routeSplit.join("/"), functions, leaf)
 				}
 				else{
 					leaf.functions = functions
@@ -258,6 +258,41 @@ function createLeaf(name,type,wild,functions){
 		children:[],
 		functions:functions,
 	}
+}
+
+function findRouteInTree(router,route,parentNode){
+	if (parentNode===undefined || parentNode===null){
+		parentNode = router.routeTree
+	}		
+	if (route==="/"){
+		return parentNode
+	} 
+	var routeSplit = route.split('/')
+	var index = findObjectWithPropertyValueInArray(parentNode.children, "path", routeSplit[0])
+	if (index>-1){
+		routeSplit.shift()
+		if (routeSplit.length>0){
+			return findRouteInTree(router,routeSplit.join('/'),parentNode.children[index])
+		}
+		else{
+			return parentNode.children[index]
+		}
+	}
+	//This checks if we need to find a variable. Regex is already checked for with the above block
+	else if (routeSplit[0][0]===":"){ 
+		index = findObjectWithPropertyValueInArray(parentNode.children,"type","variable")
+		if (index>-1){
+			routeSplit.shift()
+			if (routeSplit.length>0){
+				return findRouteInTree(router,routeSplit.join('/'),parentNode.children[index])
+			}
+			else{
+				return parentNode.children[index]
+			}
+		}
+	}
+	return null
+	
 }
 
 function pathNotFound(path){
