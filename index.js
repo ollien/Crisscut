@@ -41,7 +41,7 @@ Crisscut.prototype.route = function(req,res,errCallback){
 		errCallback(pathNotFound(rawUrl))
 	}
 }
-Crisscut.prototype.addRoute = function(method,route,func){
+Crisscut.prototype.addRoute = function(method,route,func,callback){
 	var result = findRouteInTree(this,route)
 	method = method.toLowerCase();
 	if (result!=null){
@@ -52,7 +52,56 @@ Crisscut.prototype.addRoute = function(method,route,func){
 		obj[route][method] = func
 		addRouteToRouteTree(this,obj)
 	}
+	if (callback!=null){
+		callback();
+	}
 }
+
+Crisscut.prototype.on = function(route,func,callback){
+	this.addRoute("on",route,func,callback);
+	return this
+}
+
+Crisscut.prototype.get = function(route,func,callback){
+	this.addRoute("get",route,func,callback);
+	return this
+}
+
+Crisscut.prototype.post = function(route,func,callback){
+	this.addRoute("post",route,func,callback);
+	return this
+}
+
+Crisscut.prototype.put = function(route,func,callback){
+	this.addRoute("put",route,func,callback);
+	return this
+}
+
+Crisscut.prototype.delete = function(route,func,callback){
+	this.addRoute("delete",route,func,callback);
+	return this
+}
+
+Crisscut.prototype.trace = function(route,func,callback){
+	this.addRoute("trace",route,func,callback);
+	return this
+}
+
+Crisscut.prototype.options = function(route,func,callback){
+	this.addRoute("options",route,func,callback);
+	return this
+}
+
+Crisscut.prototype.connect = function(route,func,callback){
+	this.addRoute("connect",route,func,callback);
+	return this
+}
+
+Crisscut.prototype.patch = function(route,func,callback){
+	this.addRoute("patch",route,func,callback);
+	return this
+}
+
 function correctRoutes(routes){
 	Object.keys(routes).forEach(function(route){
 		var original = route
