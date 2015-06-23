@@ -1,4 +1,5 @@
 var url = require("url")
+var querystring = require("querystring")
 
 var routeTree = {
 	path:"/",
@@ -24,7 +25,7 @@ Crisscut.prototype.route = function(req,res,errCallback){
 		var methods = routeResult.methods;
 		var args = routeResult.args;
 		var method = req.method.toLowerCase();
-		var parsedUrlArgs = rawArguments!=null ? parseArguments(rawArguments):{};
+		var parsedUrlArgs = querystring.parse(rawArguments); 
 		if (methods.hasOwnProperty(method)){
 			methods[method].apply({},[req,res].concat(args,parsedUrlArgs))
 		}
@@ -257,25 +258,6 @@ function createLeaf(name,type,wild,functions){
 		children:[],
 		functions:functions,
 	}
-}
-
-function parseArguments(queryString){
-	if (queryString.length===0){
-		return {}
-	}
-	if (queryString[0]==="?"){
-		queryString = queryString.substring(1)
-		if (queryString.length===0){
-			return {}
-		}
-	}
-	var andSplit = queryString.split("&")
-	var parsedArgs = {}
-	andSplit.forEach(function(item){
-		var split = item.split("=")
-		parsedArgs[split[0]]=split[1]
-	});
-	return parsedArgs
 }
 
 function pathNotFound(path){
