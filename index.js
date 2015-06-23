@@ -24,7 +24,7 @@ Crisscut.prototype.route = function(req,res,errCallback){
 		var methods = routeResult.methods;
 		var args = routeResult.args;
 		var method = req.method.toLowerCase();
-		var parsedUrlArgs = parseArguments(rawArguments);
+		var parsedUrlArgs = rawArguments!=null ? parseArguments(rawArguments):null;
 		if (methods.hasOwnProperty(method)){
 			methods[method].apply({},[req,res].concat(args,parsedUrlArgs))
 		}
@@ -232,8 +232,14 @@ function createLeaf(name,type,func){
 }
 
 function parseArguments(queryString){
+	if (queryString.length===0){
+		return null
+	}
 	if (queryString[0]==="?"){
 		queryString = queryString.substring(1)
+		if (queryString.length===0){
+			return null
+		}
 	}
 	var andSplit = queryString.split("&")
 	var parsedArgs = {}
