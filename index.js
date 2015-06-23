@@ -365,7 +365,7 @@ function pathNotFound(path){
 function methodNotAllowed(path,method){
 	return {
 		errorCode:405,
-		error: method+" is not allowed on "+path
+		error: method.toUpperCase()+" is not allowed on "+path
 	}
 
 }
