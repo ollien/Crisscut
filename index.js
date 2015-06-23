@@ -12,7 +12,6 @@ module.exports = Crisscut
 function Crisscut(routes){
 	if (routes!==undefined){
 		routes = correctRoutes(routes)
-		console.log(routes);
 		addRoutesToRouteTree(routes)	
 	}
 }
@@ -26,8 +25,6 @@ Crisscut.prototype.route = function(req,res,errCallback){
 		var args = routeResult.args;
 		var method = req.method.toLowerCase();
 		var parsedUrlArgs = parseArguments(rawArguments);
-		console.log(rawArguments);
-		console.log(parsedUrlArgs);
 		if (methods.hasOwnProperty(method)){
 			methods[method].apply({},[req,res].concat(args,parsedUrlArgs))
 		}
