@@ -1,26 +1,26 @@
 var url = require("url")
 var querystring = require("querystring")
 
-var routeTree = {
-	path:"/",
-	type:"explicit",
-	children:[],
-	callback:undefined
-}
-
 module.exports = Crisscut
 
 function Crisscut(routes){
+	this.routeTree = {
+		path:"/",
+		type:"explicit",
+		children:[],
+		callback:undefined
+	}
 	if (routes!==undefined){
 		routes = correctRoutes(routes)
-		addRoutesToRouteTree(routes)	
+		addRoutesToRouteTree(this,routes)	
+		console.log(JSON.stringify(this.routeTree))
 	}
 }
 Crisscut.prototype.route = function(req,res,errCallback){
 	var parsedUrl = url.parse(req.url)
 	var rawUrl = parsedUrl.pathname
 	var rawArguments = parsedUrl.query
-	var routeResult = findRouteFromUrl(rawUrl);
+	var routeResult = findRouteFromUrl(this,rawUrl);
 	if (routeResult!=null){
 		var methods = routeResult.methods;
 		var args = routeResult.args;
@@ -69,22 +69,22 @@ function correctRoutes(routes){
 }
 
 
-function addRouteToRouteTree(route,functions,parentNode){
+function addRouteToRouteTree(router,route,functions,parentNode){
 	if (route.length===0){
 		return; //No point in adding a route that literally is nothing.
 	}
 	if (route==="/"){ // We already have a root element pre-made, we can just add a function in
-		routeTree.functions = functions
+		router.routeTree.functions = functions
 		return; 
 	}
 	var routeSplit = route.split("/")
 	if (parentNode===undefined || parentNode===null){
-		parentNode = routeTree
+		parentNode = router.routeTree
 	}
 	var index = findObjectWithPropertyValueInArray(parentNode.children, "path",routeSplit[0])
 	if (index>-1){
 		routeSplit.shift()
-		addRouteToRouteTree(routeSplit.join("/"), functions, parentNode.children[index])
+		addRouteToRouteTree(router,routeSplit.join("/"), functions, parentNode.children[index])
 	}
 	else{
 		var type = routeSplit[0][0]===":" ? "variable":"explicit"
@@ -109,7 +109,7 @@ function addRouteToRouteTree(route,functions,parentNode){
 				parentNode.children.push(leaf)
 				routeSplit.shift()
 				if (routeSplit.length>0){
-					addRouteToRouteTree(routeSplit.join("/"), functions, leaf)
+					addRouteToRouteTree(router,router,routeSplit.join("/"), functions, leaf)
 				}
 				else{
 					leaf.functions = functions
@@ -121,7 +121,7 @@ function addRouteToRouteTree(route,functions,parentNode){
 			parentNode.children.push(leaf)
 			routeSplit.shift()
 			if (routeSplit.length>0){
-				addRouteToRouteTree(routeSplit.join("/"), functions, leaf)
+				addRouteToRouteTree(router,routeSplit.join("/"), functions, leaf)
 			}
 			else{
 				leaf.functions = functions
@@ -130,15 +130,15 @@ function addRouteToRouteTree(route,functions,parentNode){
 	}
 }
 
-function addRoutesToRouteTree(routes){
+function addRoutesToRouteTree(router,routes){
 	Object.keys(routes).forEach(function(route){
-		addRouteToRouteTree(route,routes[route])
+		addRouteToRouteTree(router,route,routes[route])
 	})
 }
 
-function findRouteFromUrl(url,parentNode,args){
+function findRouteFromUrl(router,url,parentNode,args){
 	if (parentNode===null || parentNode===undefined){
-		parentNode = routeTree
+		parentNode = router.routeTree
 	}
 	if (args===null || args===undefined){
 		args = []
@@ -169,7 +169,7 @@ function findRouteFromUrl(url,parentNode,args){
 	if (index>-1){
 		urlSplit.shift()
 		if (urlSplit.length>0){
-			return findRouteFromUrl(urlSplit.join("/"), parentNode.children[index],args)
+			return findRouteFromUrl(router,urlSplit.join("/"), parentNode.children[index],args)
 		}
 		else{
 			var methods = parentNode.children[index].functions
@@ -213,7 +213,7 @@ function findRouteFromUrl(url,parentNode,args){
 					urlSplit.shift()
 				}
 				if (urlSplit.length>0){
-					return findRouteFromUrl(urlSplit.join("/"), parentNode.children[index],args)
+					return findRouteFromUrl(router,urlSplit.join("/"), parentNode.children[index],args)
 				}
 				else{
 					var methods = parentNode.children[index].functions
@@ -233,7 +233,7 @@ function findRouteFromUrl(url,parentNode,args){
 			args.push(urlSplit[0])
 			urlSplit.shift()
 			if (urlSplit.length>0){
-				return findRouteFromUrl(urlSplit.join("/"),parentNode.children[variableIndex],args)
+				return findRouteFromUrl(router,urlSplit.join("/"),parentNode.children[variableIndex],args)
 			}
 			else{
 				var methods = parentNode.children[index].functions
