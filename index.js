@@ -87,8 +87,15 @@ function addRouteToRouteTree(route,functions,parentNode){
 	}
 	else{
 		var type = routeSplit[0][0]===":" ? "variable":"explicit"
+		var wild = false
 		if (type==="variable"){
-			type = routeSplit[0][1]==="(" && routeSplit[0][routeSplit[0].length-1]===")" ? "regex":"variable"
+			if (routeSplit[0][1]==="(" && routeSplit[0][routeSplit[0].length-1]===")"){
+				type = "regex"
+			}
+			else if (routeSplit[0][1]==="(" && routeSplit[0][routeSplit[0].length-2]===")" && routeSplit[0][routeSplit[0].length-1]==="*"){
+				type = "regex"
+				wild = true
+			}
 		}
 		if (type==="variable"){
 			index = findObjectWithPropertyValueInArray(parentNode.children, "type", "variable")
@@ -97,7 +104,7 @@ function addRouteToRouteTree(route,functions,parentNode){
 				addRouteToRouteTree(routeSplit.join("/"), functions, routeSplit.children[index])
 			}
 			else{
-				var leaf = createLeaf(routeSplit[0], type)
+				var leaf = createLeaf(routeSplit[0], type,false)
 				parentNode.children.push(leaf)
 				routeSplit.shift()
 				if (routeSplit.length>0){
@@ -109,7 +116,7 @@ function addRouteToRouteTree(route,functions,parentNode){
 			}
 		}
 		else{
-			var leaf = createLeaf(routeSplit[0], type)
+			var leaf = createLeaf(routeSplit[0], type,wild)
 			parentNode.children.push(leaf)
 			routeSplit.shift()
 			if (routeSplit.length>0){
@@ -180,10 +187,30 @@ function findRouteFromUrl(url,parentNode,args){
 		var variableIndex = findObjectWithPropertyValueInArray(parentNode.children, "type", "variable") //There should only ever be one variable in the tree.
 		for (var i=0; i<regexIndexes.length; i++){
 			var index = regexIndexes[i];
-			var match = urlSplit[0].match(parentNode.children[index].path.substring(1)); 
+			var regex = parentNode.children[index].wild ? parentNode.children[index].path.substring(1,parentNode.children[index].path.length-1):parentNode.children[index].path.substring(1)
+			var match = urlSplit[0].match(regex);
 			if (match && match[0]===urlSplit[0]){
-				args.push(urlSplit[0])
-				urlSplit.shift()
+				//We need to check if the regex was wildcard, in which case we need to keep going through the loop
+				if (parentNode.children[index].wild){
+					var matches = []
+					matches.push(urlSplit[0])
+					urlSplit.shift();
+					while(urlSplit.length>0){
+						match = urlSplit[0].match(regex)
+						if (match && match[0]===urlSplit[0]){
+							matches.push(urlSplit[0])
+							urlSplit.shift()
+						}
+						else{
+							break
+						}
+					}
+					args.push(matches.join('/'))
+				}
+				else{
+					args.push(urlSplit[0])
+					urlSplit.shift()
+				}
 				if (urlSplit.length>0){
 					return findRouteFromUrl(urlSplit.join("/"), parentNode.children[index],args)
 				}
@@ -205,7 +232,7 @@ function findRouteFromUrl(url,parentNode,args){
 			args.push(urlSplit[0])
 			urlSplit.shift()
 			if (urlSplit.length>0){
-				return findRouteFromUrl(urlSplit.join("/"),parentNode.chldren[variableIndex],args)
+				return findRouteFromUrl(urlSplit.join("/"),parentNode.children[variableIndex],args)
 			}
 			else{
 				var methods = parentNode.children[index].functions
@@ -222,12 +249,13 @@ function findRouteFromUrl(url,parentNode,args){
 	}
 }
 
-function createLeaf(name,type,func){
+function createLeaf(name,type,wild,functions){
 	return {
 		path:name,
 		type:type,
+		wild:wild,
 		children:[],
-		func:func,
+		functions:functions,
 	}
 }
 
