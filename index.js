@@ -49,8 +49,8 @@ Crisscut.prototype.addRoute = function(method,route,func,callback){
 	}
 	else{
 		var obj = {};
-		obj[route][method] = func
-		addRouteToRouteTree(this,obj)
+		obj[method] = func
+		addRouteToRouteTree(this,route,method)
 	}
 	if (callback!=null){
 		callback();
@@ -138,15 +138,21 @@ function addRouteToRouteTree(router,route,functions,parentNode){
 		router.routeTree.functions = functions
 		return; 
 	}
+	console.log(functions);
 	var routeSplit = route.split("/")
 	if (parentNode===undefined || parentNode===null){
 		parentNode = router.routeTree
 	}
 	var index = findObjectWithPropertyValueInArray(parentNode.children, "path",routeSplit[0])
 	if (index>-1){
+		console.log(routeSplit[0])
+		console.log(functions)
 		routeSplit.shift()
 		if (routeSplit.length>0){
 			addRouteToRouteTree(router,routeSplit.join("/"), functions, parentNode.children[index])
+		}
+		else{
+			parentNode.children[index].functions = functions
 		}
 	}
 	else{
@@ -299,7 +305,7 @@ function findRouteFromUrl(router,url,parentNode,args){
 				return findRouteFromUrl(router,urlSplit.join("/"),parentNode.children[variableIndex],args)
 			}
 			else{
-				var methods = parentNode.children[index].functions
+				var methods = parentNode.children[variableIndex].functions
 				if (methods===null || methods===undefined){
 					return null
 				}
