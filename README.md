@@ -5,7 +5,7 @@ So you need a router for Node? Look no further than Crisscut!
 
 Setting up Crisscut is easy.
 
-```
+```javascript
 var http = require("http")
 var Crisscut = require("crisscut")
 //You can set up your routes with a routing table like so
