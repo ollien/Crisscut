@@ -33,11 +33,11 @@ Crisscut.prototype.route = function(req,res,errCallback){
 		else if (methods.hasOwnProperty("on")){
 			methods.on.apply({},[req,res].concat(args,parsedUrlArgs))
 		}
-		else{
+		else if (errCallback!=null){
 			errCallback(methodNotAllowed(rawUrl,method));
 		}
 	}
-	else{
+	else if (errCallback!=null){
 		errCallback(pathNotFound(rawUrl))
 	}
 }
