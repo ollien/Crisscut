@@ -1,6 +1,8 @@
 # Crisscut
 A simplistic router for Node.js
 
+[![NPM Version][npm-badge]][npm-url]
+
 So you need a router for Node? Look no further than Crisscut!
 
 Setting up Crisscut is easy.
@@ -92,3 +94,6 @@ Method | Description
 `Crisscut.prototype.trace(route,routeFunction,[callback])` | Add a TRACE route to Crisscut
 `Crisscut.prototype.connect(route,routeFunction,[callback])` | Add a CONNECT route to Crisscut
 `Crisscut.prototype.path(route,routeFunction,[callback])` | Add a PATCH route to Crisscut
+
+[npm-badge]: https://img.shields.io/npm/v/crisscut.svg
+[npm-url]: https://npmjs.org/package/crisscut
