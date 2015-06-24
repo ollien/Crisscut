@@ -53,7 +53,11 @@ var router = new Crisscut(routes)
 router.get('/',function(req,res){
 	res.writeHead({"Content-Type":"text/plain"})
 	res.end("Hello!")
-})
+}).post('/',function(req,res,params){  //You can even chain these together if you want!
+	//Any query arguments (i.e. /?foo=bar) will get returned as the final argument to your callback.
+	res.writeHead({"Content-Type":"text/plain"});
+	res.writeHead("You sent "+JSON.stringify(params));
+}
 
 
 http.createServer(function(req,res){
