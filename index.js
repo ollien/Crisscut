@@ -145,7 +145,9 @@ function addRouteToRouteTree(router,route,functions,parentNode){
 	var index = findObjectWithPropertyValueInArray(parentNode.children, "path",routeSplit[0])
 	if (index>-1){
 		routeSplit.shift()
-		addRouteToRouteTree(router,routeSplit.join("/"), functions, parentNode.children[index])
+		if (routeSplit.length>0){
+			addRouteToRouteTree(router,routeSplit.join("/"), functions, parentNode.children[index])
+		}
 	}
 	else{
 		var type = routeSplit[0][0]===":" ? "variable":"explicit"
