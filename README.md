@@ -43,7 +43,7 @@ var routes = {
 		//If we were to GET /file/img/watermelon.png, we would be returned the text "You requested img/watermelon.png"
 		get:function(req,res,path){
 			res.writeHead({"Content-Type":"text/plain"})
-			res.end("You requested "+path")
+			res.end("You requested "+path)
 		}
 	}
 }
