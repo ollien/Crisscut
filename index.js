@@ -53,7 +53,6 @@ Crisscut.prototype.addRoute = function(method,route,func,callback){
 		checkObj[route] = {}
 		checkObj[route][method] = func
 		var corrected = correctRoute(checkObj)
-		console.log(corrected);
 		route = getKey(corrected)
 		addRouteToRouteTree(this,route,corrected[route])
 	}
@@ -133,13 +132,14 @@ function correctRoute(route){
 			}
 		})
 	}
-	console.log("route:"+JSON.stringify(route))
 	return route
 }
 
 function correctRoutes(routes){
 	Object.keys(routes).forEach(function(route){
-		var corrected = correctRoute({route: routes[route]})	
+		var obj = {}
+		obj[route] = routes[route]
+		var corrected = correctRoute(obj)	
 		if (corrected===null){
 			throw new Error("Error with object in correctRoutes")
 		}
