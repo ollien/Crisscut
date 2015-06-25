@@ -1,6 +1,6 @@
 {
 	"name":"crisscut",
-	"version":"0.1.3-beta",
+	"version":"0.1.4-beta",
 	"description":"A simple, effortless router for Node.js",
 	"license": "MIT"
 }
