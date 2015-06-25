@@ -306,6 +306,7 @@ function findRouteFromUrl(router,url,parentNode,args){
 					var methods = parentNode.children[index].functions
 					if (methods===null || methods===undefined){
 						//return null
+						//If it turns out there's nothing for this route, we shouldn't use it. In this case, we take out the argument and throw them back into urlSplit
 						urlSplit.push(args.pop())
 						continue;
 					}
