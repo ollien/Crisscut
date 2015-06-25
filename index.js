@@ -27,6 +27,7 @@ Crisscut.prototype.route = function(req,res,errCallback){
 		var args = routeResult.args;
 		var method = req.method.toLowerCase();
 		var parsedUrlArgs = querystring.parse(rawArguments); 
+		parsedUrlArgs = parsedUrlArgs === null ? {}:parsedUrlArgs
 		if (methods.hasOwnProperty(method)){
 			methods[method].apply({},[req,res].concat(args,parsedUrlArgs))
 		}
@@ -48,9 +49,13 @@ Crisscut.prototype.addRoute = function(method,route,func,callback){
 		result.functions[method] = func
 	}
 	else{
-		var obj = {};
-		obj[method] = func
-		addRouteToRouteTree(this,route,method)
+		var checkObj = {}
+		checkObj[route] = {}
+		checkObj[route][method] = func
+		var corrected = correctRoute(checkObj)
+		console.log(corrected);
+		route = getKey(corrected)
+		addRouteToRouteTree(this,route,corrected[route])
 	}
 	if (callback!=null){
 		callback();
@@ -102,29 +107,45 @@ Crisscut.prototype.patch = function(route,func,callback){
 	return this
 }
 
+function correctRoute(route){
+	var key = getKey(route)
+	if (key===null){
+		return null;
+	}
+	var original = key
+	var value = route[key]
+	if (key[0]==="/" && key.length>1){ //Routes must not begin with a /, unless they are /
+		key = key.substring(1)
+	}
+	if (key[key.length-1]==="/" && key.length>1){ //Routes must not end with a /, unless of course, they are to the homepage.
+		key = key.substring(0,key.length-1)
+	}
+	if (key!=original){
+		delete route[original]
+		route[key] = value
+	}
+	if (typeof route[key] === "object"){
+		Object.keys(route[key]).forEach(function(item){
+			if (item!=item.toLowerCase()){
+				var value = route[key][item]
+				delete route[key][item]
+				route[key][item.toLowerCase()] = value
+			}
+		})
+	}
+	console.log("route:"+JSON.stringify(route))
+	return route
+}
+
 function correctRoutes(routes){
 	Object.keys(routes).forEach(function(route){
-		var original = route
-		var value = routes[route]
-		if (route[0]==="/" && route.length>1){ //Routes must not begin with a /, unless they are /
-			route = route.substring(1)
+		var corrected = correctRoute({route: routes[route]})	
+		if (corrected===null){
+			throw new Error("Error with object in correctRoutes")
 		}
-		if (route[route.length-1]==="/" && route.length>1){ //Routes must not end with a /, unless of course, they are to the homepage.
-			route = route.substring(0,route.length-1)
-		}
-		if (route!=original){
-			delete routes[original]
-			routes[route] = value
-		}
-		if (typeof routes[route] === "object"){
-			Object.keys(routes[route]).forEach(function(item){
-				if (item!=item.toLowerCase()){
-					var value = routes[route][item]
-					delete routes[route][item]
-					routes[route][item.toLowerCase()] = value
-				}
-			})
-		}
+		delete routes[route]
+		var key = getKey(corrected)
+		routes[key] = corrected[key]
 	})
 	return routes
 }
@@ -138,15 +159,12 @@ function addRouteToRouteTree(router,route,functions,parentNode){
 		router.routeTree.functions = functions
 		return; 
 	}
-	console.log(functions);
 	var routeSplit = route.split("/")
 	if (parentNode===undefined || parentNode===null){
 		parentNode = router.routeTree
 	}
 	var index = findObjectWithPropertyValueInArray(parentNode.children, "path",routeSplit[0])
 	if (index>-1){
-		console.log(routeSplit[0])
-		console.log(functions)
 		routeSplit.shift()
 		if (routeSplit.length>0){
 			addRouteToRouteTree(router,routeSplit.join("/"), functions, parentNode.children[index])
@@ -287,7 +305,9 @@ function findRouteFromUrl(router,url,parentNode,args){
 				else{
 					var methods = parentNode.children[index].functions
 					if (methods===null || methods===undefined){
-						return null
+						//return null
+						urlSplit.push(args.pop())
+						continue;
 					}
 
 					return {
@@ -412,6 +432,17 @@ function findObjectsWithPropertyValueInArray(array,property,value){
 		}
 	}
 	return results
+}
+
+function getKey(obj){
+	var keys = Object.keys(obj);
+
+	if (keys.length===1){
+		return keys[0]
+	}
+	else{
+		return null;
+	}
 }
 
 function clone(object){
