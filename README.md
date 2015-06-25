@@ -13,38 +13,38 @@ var Crisscut = require("crisscut")
 //You can set up your routes with a routing table like so
 var routes = {
 	//Explicit route example
-	"/helloWorld":{
+	"/helloWorld": {
 		//Just define what method you want to use!
-		get:function(req,res){
-			res.writeHead({"Content-Type":"text/plain"})
+		get: function(req,res){
+			res.writeHead({"Content-Type": "text/plain"})
 			res.end("Hello world!")
 		},
 		//We can also use 'on' as a catchall for all requests that aren't already defined. For example, a POST would end up in this function
-		on:function(req,res){
-			res.writeHead({"Content-Type":"text/plain"})
+		on: function(req,res){
+			res.writeHead({"Content-Type": "text/plain"})
 			res.end("Hello strange method!")
 		}
 	},
 	//Of course, your routes can have variables in your routes
-	"/user/:name":{
+	"/user/:name": {
 		//If we were to GET /user/ollien, we would get returned the text "Hello ollien!"
-		get:function(req,res,name){
-			res.writeHead({"Content-Type":"text/plain"})
+		get: function(req,res,name){
+			res.writeHead({"Content-Type": "text/plain"})
 			res.end("Hello "+name+"!")
 		}
 	},
 	//Or, if you want to use regex, that's fine too! Just put your regex in prands, like so
-	"/user/:([0-9]+)":{
-		get:function(req,res,userId){
-			res.writeHead({"Content-Type":"text/plain"})
+	"/user/:([0-9]+)": {
+		get: function(req,res,userId){
+			res.writeHead({"Content-Type": "text/plain"})
 			res.end("Hello user "+userId+"!")
 		}
 	}
 	//You can even have this regex match over multiple components of your url.
-	"/file/:(.*)*":{ 
+	"/file/:(.*)*": { 
 		//If we were to GET /file/img/watermelon.png, we would be returned the text "You requested img/watermelon.png"
-		get:function(req,res,path){
-			res.writeHead({"Content-Type":"text/plain"})
+		get: function(req,res,path){
+			res.writeHead({"Content-Type": "text/plain"})
 			res.end("You requested "+path)
 		}
 	}
@@ -52,14 +52,16 @@ var routes = {
 var router = new Crisscut(routes)
 
 //Of course if you prefer, you can add a route on the fly after the router is defined.
-router.get('/',function(req,res){
-	res.writeHead({"Content-Type":"text/plain"})
-	res.end("Hello!")
-}).post('/',function(req,res,params){  //You can even chain these together if you want!
-	//Any query arguments (i.e. /?foo=bar) will get returned as the final argument to your callback.
-	res.writeHead({"Content-Type":"text/plain"});
-	res.writeHead("You sent "+JSON.stringify(params));
-}
+router
+	.get('/',function(req,res){
+		res.writeHead({"Content-Type": "text/plain"})
+		res.end("Hello!")
+	})
+	.post('/',function(req,res,params){  //You can even chain these together if you want!
+		//Any query arguments (i.e. /?foo=bar) will get returned as the final argument to your callback.
+		res.writeHead({"Content-Type":"text/plain"});
+		res.writeHead("You sent "+JSON.stringify(params));
+	})
 
 
 http.createServer(function(req,res){
