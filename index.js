@@ -119,13 +119,13 @@ function correctRoute(route){
 	if (key[key.length-1]==="/" && key.length>1){ //Routes must not end with a /, unless of course, they are to the homepage.
 		key = key.substring(0,key.length-1)
 	}
-	if (key!=original){
+	if (key!==original){
 		delete route[original]
 		route[key] = value
 	}
 	if (typeof route[key] === "object"){
 		Object.keys(route[key]).forEach(function(item){
-			if (item!=item.toLowerCase()){
+			if (item!==item.toLowerCase()){
 				var value = route[key][item]
 				delete route[key][item]
 				route[key][item.toLowerCase()] = value
