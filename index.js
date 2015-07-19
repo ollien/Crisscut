@@ -180,7 +180,7 @@ function addRouteToRouteTree(router,route,functions,parentNode){
 			if (routeSplit[0][1]==="(" && routeSplit[0][routeSplit[0].length-1]===")"){
 				type = "regex"
 			}
-			else if (routeSplit[0][1]==="(" && routeSplit[0][routeSplit[0].length-2]===")" && routeSplit[0][routeSplit[0].length-1]==="*"){
+			else if (routeSplit[0][1]==="(" && routeSplit[0][routeSplit[0].length-2]===")" && routeSplit[0][routeSplit[0].length-1]==="+"){
 				type = "regex"
 				wild = true
 			}
