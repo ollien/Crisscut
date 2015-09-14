@@ -1,3 +1,5 @@
+/*jshint eqnull: true */
+
 var url = require("url");
 var querystring = require("querystring");
 module.exports = Crisscut;
