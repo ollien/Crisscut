@@ -1,10 +1,10 @@
 {
 	"name":"crisscut",
-	"version":"0.1.6-beta",
+	"version":"0.2.0-beta",
 	"description":"A simple, effortless router for Node.js",
-	"repository":{
+	"repository": {
 		"type":"git",
-		"url":"https://github.com/ollien/Crisscut"
+		"url":"https://github.com/ollien/crisscut"
 	},
 	"license": "MIT"
 }
