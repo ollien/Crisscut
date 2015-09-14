@@ -188,6 +188,7 @@ function addRouteToRouteTree(router, route, functions, parentNode) {
 	else {
 		var type = routeSplit[0][0] === ":" ? "variable" : "explicit";
 		var wild = false;
+		var leaf = null;
 
 		if (type === "variable") {
 			if (routeSplit[0][1] === "(" && routeSplit[0][routeSplit[0].length - 1] === ")") {
@@ -208,7 +209,7 @@ function addRouteToRouteTree(router, route, functions, parentNode) {
 			} 
 			
 			else {
-				var leaf = createLeaf(routeSplit[0], type, false);
+				leaf = createLeaf(routeSplit[0], type, false);
 				parentNode.children.push(leaf);
 				routeSplit.shift();
 				if (routeSplit.length > 0) {
@@ -222,7 +223,7 @@ function addRouteToRouteTree(router, route, functions, parentNode) {
 		} 
 		
 		else {
-			var leaf = createLeaf(routeSplit[0], type, wild);
+			leaf = createLeaf(routeSplit[0], type, wild);
 			parentNode.children.push(leaf);
 			routeSplit.shift();
 			if (routeSplit.length > 0) {
@@ -275,6 +276,7 @@ function findRouteFromUrl(router, url, parentNode, args) {
 	}
 	var urlSplit = url.split("/");
 	var index = findObjectWithPropertyValueInArray(parentNode.children, "path", urlSplit[0]);
+	var methods = null;
 
 	//If we have an explicit route, use it, otherwise, we need to do some searching.
 	if (index > -1) {
@@ -284,7 +286,7 @@ function findRouteFromUrl(router, url, parentNode, args) {
 		} 
 		
 		else {
-			var methods = parentNode.children[index].functions;
+			methods = parentNode.children[index].functions;
 			if (methods === null || methods === undefined) {
 				return null;
 			}
@@ -300,7 +302,7 @@ function findRouteFromUrl(router, url, parentNode, args) {
 		var variableIndex = findObjectWithPropertyValueInArray(parentNode.children, "type", "variable");
 		//There should only ever be one variable in the tree.
 		for (var i = 0; i < regexIndexes.length; i++) {
-			var index = regexIndexes[i];
+			index = regexIndexes[i];
 			var regex = parentNode.children[index].wild ? parentNode.children[index].path.substring(1, parentNode.children[index].path.length - 1) : parentNode.children[index].path.substring(1);
 			var match = urlSplit[0].match(regex);
 			if (match && match[0] === urlSplit[0]) {
@@ -334,7 +336,7 @@ function findRouteFromUrl(router, url, parentNode, args) {
 				} 
 				
 				else {
-					var methods = parentNode.children[index].functions;
+					methods = parentNode.children[index].functions;
 					if (methods === null || methods === undefined) {
 						//If it turns out there"s nothing for this route, we shouldn"t use it. In this case, we take out the argument and throw them back into urlSplit
 						urlSplit.push(args.pop());
@@ -356,7 +358,7 @@ function findRouteFromUrl(router, url, parentNode, args) {
 			} 
 			
 			else {
-				var methods = parentNode.children[variableIndex].functions;
+				methods = parentNode.children[variableIndex].functions;
 				if (methods === null || methods === undefined) {
 					return null;
 				}
