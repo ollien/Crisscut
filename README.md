@@ -97,5 +97,5 @@ Method | Description
 `Crisscut.prototype.connect(route,routeFunction,[callback])` | Add a CONNECT route to Crisscut
 `Crisscut.prototype.path(route,routeFunction,[callback])` | Add a PATCH route to Crisscut
 
-[npm-badge]: https://img.shields.io/npm/v/crisscut.svg
+[npm-badge]: https://badge.fury.io/js/crisscut.svg
 [npm-url]: https://npmjs.org/package/crisscut
