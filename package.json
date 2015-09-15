@@ -1,6 +1,6 @@
 {
 	"name":"crisscut",
-	"version":"0.2.1-beta",
+	"version":"0.2.3-beta",
 	"description":"A simple, effortless router for Node.js",
 	"repository": {
 		"type":"git",

@@ -31,16 +31,13 @@ Crisscut.prototype.route = function (req, res, errCallback) {
 		if (methods.hasOwnProperty(method)) {
 			methods[method].apply({}, [req, res].concat(args, parsedUrlArgs));
 		} 
-	
 		else if (methods.hasOwnProperty("on")) {
 				methods.on.apply({}, [req, res].concat(args, parsedUrlArgs));
 		} 
-		
 		else if (errCallback != null) {
 			errCallback(methodNotAllowed(rawUrl, method));
 		}
 	} 
-		
 	else if (errCallback != null) {
 		errCallback(pathNotFound(rawUrl));
 	}
@@ -52,7 +49,6 @@ Crisscut.prototype.addRoute = function (method, route, func, callback) {
 	if (result != null) {
 		result.functions[method] = func;
 	} 
-	
 	else {
 		var checkObj = {};
 		checkObj[route] = {};
@@ -179,12 +175,10 @@ function addRouteToRouteTree(router, route, functions, parentNode) {
 		if (routeSplit.length > 0) {
 			addRouteToRouteTree(router, routeSplit.join("/"), functions, parentNode.children[index]);
 		} 
-		
 		else {
 			parentNode.children[index].functions = functions;
 		}
 	} 
-	
 	else {
 		var type = routeSplit[0][0] === ":" ? "variable" : "explicit";
 		var wild = false;
@@ -194,7 +188,6 @@ function addRouteToRouteTree(router, route, functions, parentNode) {
 			if (routeSplit[0][1] === "(" && routeSplit[0][routeSplit[0].length - 1] === ")") {
 				type = "regex";
 			} 
-			
 			else if (routeSplit[0][1] === "(" && routeSplit[0][routeSplit[0].length - 2] === ")" && routeSplit[0][routeSplit[0].length - 1] === "*") {
 				type = "regex";
 				wild = true;
@@ -207,7 +200,6 @@ function addRouteToRouteTree(router, route, functions, parentNode) {
 				routeSplit.shift();
 				addRouteToRouteTree(router, routeSplit.join("/"), functions, parentNode.children[index]);
 			} 
-			
 			else {
 				leaf = createLeaf(routeSplit[0], type, false);
 				parentNode.children.push(leaf);
@@ -229,7 +221,6 @@ function addRouteToRouteTree(router, route, functions, parentNode) {
 			if (routeSplit.length > 0) {
 				addRouteToRouteTree(router, routeSplit.join("/"), functions, leaf);
 			} 
-			
 			else {
 				leaf.functions = functions;
 			}
@@ -264,7 +255,6 @@ function findRouteFromUrl(router, url, parentNode, args) {
 			};
 		}
 	} 
-	
 	else {
 		if (url[0] === "/") {
 			url = url.substring(1);
@@ -283,8 +273,7 @@ function findRouteFromUrl(router, url, parentNode, args) {
 		urlSplit.shift();
 		if (urlSplit.length > 0) {
 			return findRouteFromUrl(router, urlSplit.join("/"), parentNode.children[index], args);
-		} 
-		
+		}
 		else {
 			methods = parentNode.children[index].functions;
 			if (methods === null || methods === undefined) {
@@ -296,7 +285,6 @@ function findRouteFromUrl(router, url, parentNode, args) {
 			};
 		}
 	} 
-	
 	else {
 		var regexIndexes = findObjectsWithPropertyValueInArray(parentNode.children, "type", "regex");
 		var variableIndex = findObjectWithPropertyValueInArray(parentNode.children, "type", "variable");
@@ -325,7 +313,6 @@ function findRouteFromUrl(router, url, parentNode, args) {
 					}
 					args.push(matches.join("/"));
 				} 
-				
 				else {
 					args.push(urlSplit[0]);
 					urlSplit.shift();
@@ -334,7 +321,6 @@ function findRouteFromUrl(router, url, parentNode, args) {
 				if (urlSplit.length > 0) {
 					return findRouteFromUrl(router, urlSplit.join("/"), parentNode.children[index], args);
 				} 
-				
 				else {
 					methods = parentNode.children[index].functions;
 					if (methods === null || methods === undefined) {
@@ -356,7 +342,6 @@ function findRouteFromUrl(router, url, parentNode, args) {
 			if (urlSplit.length > 0) {
 				return findRouteFromUrl(router, urlSplit.join("/"), parentNode.children[variableIndex], args);
 			} 
-			
 			else {
 				methods = parentNode.children[variableIndex].functions;
 				if (methods === null || methods === undefined) {
