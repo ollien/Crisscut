@@ -74,6 +74,7 @@ http.createServer(function(req, res){
 
 ```
 ##Route syntax
+
 Syntax | Description | Example URL
 -------|------------ | -----------
 `/my/route` | An basic route | http://example.com/my/route
@@ -83,6 +84,7 @@ Syntax | Description | Example URL
 
 
 ##Method Documentation
+
 Method | Description
 --------|---------
 `Crisscut([routes])` | Basic constructor for Crisscut.
