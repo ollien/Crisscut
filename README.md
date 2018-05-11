@@ -73,7 +73,7 @@ http.createServer(function(req, res){
 }).listen(8080, '127.0.0.1');
 
 ```
-##Route syntax
+## Route syntax
 
 Syntax | Description | Example URL
 -------|------------ | -----------
@@ -83,7 +83,7 @@ Syntax | Description | Example URL
 `/my/route/:([0-9]+)*` | A route that will only match [0-9]+ as a variable,  as well as any other subseqent parts of the route that match the regex.  | http://example.com/my/route/59/82
 
 
-##Method Documentation
+## Method Documentation
 
 Method | Description
 --------|---------
